@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+	
+    defaultConfig {
+        applicationId "com.romide.terminal"
+        minSdkVersion 11
+        targetSdkVersion 21
+        versionName "3.0.1"
+        versionCode 110
+    }
+	
+    signingConfigs {
+        release {
+            keyAlias 'kiva'
+            keyPassword 'wujialin'
+            storeFile file('F:/Android/kiva.keystore')
+            storePassword 'wujialin'
+        }
+    }
+
+    sourceSets {
+        main {
+            jni.srcDirs = ["jni"];
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            versionNameSuffix '-release'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            versionNameSuffix '-debug'
+			signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+}
+

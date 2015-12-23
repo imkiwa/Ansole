@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="light_background">#ffA5A5A5</color>
+	<color name="light_text">#ff000000</color>
+	
+	<color name="dark_background">#ff000000</color>
+	<color name="dark_text">#ffffffff</color>
+	
+	<color name="actionbar_bg">#FF0099CC</color>
+
+    <color name="colorPrimary">#607D8B</color>
+    <color name="colorPrimaryDark">#455A64</color>
+    <color name="colorAccent">#8BC34A</color>
+
+	<color name="close_btn_pressed">#bebebe</color>
+</resources>

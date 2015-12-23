@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:icon="@drawable/pref_screen"
+        android:summary="@string/screen_summary"
+        android:title="@string/screen_preferences">
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.romide.terminal.activity.TermScreenPreference"
+            android:targetPackage="com.romide.terminal"/>
+
+    </Preference>
+
+    <Preference
+        android:icon="@drawable/pref_kb"
+        android:summary="@string/kb_summary"
+        android:title="@string/keyboard_preferences">
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.romide.terminal.activity.TermKeyboardPreference"
+            android:targetPackage="com.romide.terminal"/>
+
+    </Preference>
+
+    <Preference
+        android:icon="@drawable/pref_text"
+        android:summary="@string/text_summary"
+        android:title="@string/text_preferences">
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.romide.terminal.activity.TermTextPreference"
+            android:targetPackage="com.romide.terminal"/>
+
+    </Preference>
+
+    <Preference
+        android:icon="@drawable/pref_shell"
+        android:summary="@string/shell_summary"
+        android:title="@string/shell_preferences">
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.romide.terminal.activity.TermShellPreference"
+            android:targetPackage="com.romide.terminal"/>
+
+    </Preference>
+
+    <Preference
+        android:icon="@drawable/pref_ind"
+        android:summary="@string/custom_summary"
+        android:title="@string/custom_preferences">
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.romide.terminal.activity.TermCustomPreference"
+            android:targetPackage="com.romide.terminal"/>
+
+    </Preference>
+
+</PreferenceScreen>

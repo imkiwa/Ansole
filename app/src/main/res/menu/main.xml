@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_new_window"
+        android:icon="@drawable/ic_menu_add"
+        android:title="@string/new_window"/>
+    <item
+        android:id="@+id/menu_close_window"
+        android:icon="@drawable/ic_menu_close"
+        android:title="@string/close_window"/>
+    <item
+        android:id="@+id/menu_window_list"
+        android:title="@string/window_list"/>
+    <item
+        android:id="@+id/menu_reset"
+        android:title="@string/reset"/>
+    <item
+        android:id="@+id/menu_title"
+        android:title="@string/menu_set_title"/>
+    <item
+        android:id="@+id/menu_ssh"
+        android:title="@string/menu_ssh"/>
+    <item
+        android:id="@+id/menu_special_keys"
+        android:title="@string/special_keys"/>
+    
+    <item
+        android:id="@+id/menu_toggle_wakelock"
+        android:title="@string/enable_wakelock"/>
+    
+    <item
+        android:id="@+id/menu_toggle_wifilock"
+        android:title="@string/enable_wifilock"/>
+    
+    <item
+        android:id="@+id/menu_preferences"
+        android:title="@string/preferences"/>
+
+</menu>

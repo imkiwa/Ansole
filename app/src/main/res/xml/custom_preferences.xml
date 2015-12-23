@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/custom_preferences">
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_start_on_boot"
+            android:key="start_on_boot"
+            android:summary="@string/summary_start_on_boot"
+            android:title="@string/title_start_on_boot"/>
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_auto_su"
+            android:key="auto_su"
+            android:summary="@string/summary_auto_su"
+            android:title="@string/title_auto_su"/>
+
+        <EditTextPreference
+            android:defaultValue="@string/pref_external_shell_default"
+            android:key="external_shell_path"
+            android:summary="@string/sum_extshell"
+            android:title="@string/external_shell_bin_path"/>
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_external_use_login"
+            android:key="external_use_login"
+            android:summary="@string/sum_login"
+            android:title="@string/external_use_login"/>
+
+        <EditTextPreference
+            android:defaultValue="@string/pref_external_profile_default"
+            android:key="external_profile_path"
+            android:summary="@string/sum_profile"
+            android:title="@string/external_profile_path"/>
+
+        <CheckBoxPreference
+            android:defaultValue="@bool/pref_external_use_profile"
+            android:key="external_use_profile"
+            android:summary="@string/sum_def_profile"
+            android:title="@string/external_use_profile"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>
