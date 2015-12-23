@@ -18,6 +18,7 @@ package com.romide.terminal.activity;
 
 import java.io.IOException;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -109,6 +110,9 @@ public class Term extends ActivityBase implements UpdateCallback {
     private static final int VIEW_FLIPPER = R.id.view_flipper;
 
     private static final int TERM_LIST = R.id.term_list;
+
+    private static final int TERM_MENU_COUNT = 5;
+    private TermMenuItem[] mTermMenuItems = new TermMenuItem[TERM_MENU_COUNT];
 
     private SessionList mTermSessions;
     private AppCompatSpinner mTermList;
@@ -348,7 +352,7 @@ public class Term extends ActivityBase implements UpdateCallback {
                     && mActionBarMode == TermSettings.ACTION_BAR_MODE_HIDES
                     && mActionBar.isShowing()) {
                 /*
-				 * We need to intercept the key event before the view sees it,
+                 * We need to intercept the key event before the view sees it,
 				 * otherwise the view will handle it before we get it
 				 */
                 onKeyUp(keyCode, event);
@@ -451,8 +455,15 @@ public class Term extends ActivityBase implements UpdateCallback {
         mActionBarMode = actionBarMode;
 
         setContentView(R.layout.term_activity);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mTermMenuItems[0] = new TermMenuItem(SELECT_TEXT_ID, getString(R.string.select_text));
+        mTermMenuItems[1] = new TermMenuItem(COPY_ALL_ID, getString(R.string.copy_all));
+        mTermMenuItems[2] = new TermMenuItem(PASTE_ID, getString(R.string.paste));
+        mTermMenuItems[3] = new TermMenuItem(SEND_CONTROL_KEY_ID, getString(R.string.send_control_key));
+        mTermMenuItems[4] = new TermMenuItem(SEND_FN_KEY_ID, getString(R.string.send_fn_key));
 
         mViewFlipper = (TermViewFlipper) findViewById(VIEW_FLIPPER);
 
@@ -800,8 +811,8 @@ public class Term extends ActivityBase implements UpdateCallback {
         }
 
         if (AndroidCompat.SDK < 5) {
-			/*
-			 * If we lose focus between a back key down and a back key up, we
+            /*
+             * If we lose focus between a back key down and a back key up, we
 			 * shouldn't respond to the next back key up event unless we get
 			 * another key down first
 			 */
@@ -809,7 +820,7 @@ public class Term extends ActivityBase implements UpdateCallback {
         }
 
 		/*
-		 * Explicitly close the input method Otherwise, the soft keyboard could
+         * Explicitly close the input method Otherwise, the soft keyboard could
 		 * cover up whatever activity takes our place
 		 */
         final IBinder token = viewFlipper.getWindowToken();
@@ -1073,42 +1084,35 @@ public class Term extends ActivityBase implements UpdateCallback {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle(R.string.edit_text);
-        menu.add(0, SELECT_TEXT_ID, 0, R.string.select_text);
-        menu.add(0, COPY_ALL_ID, 0, R.string.copy_all);
-        menu.add(0, PASTE_ID, 0, R.string.paste);
-        menu.add(0, SEND_CONTROL_KEY_ID, 0, R.string.send_control_key);
-        menu.add(0, SEND_FN_KEY_ID, 0, R.string.send_fn_key);
-
-        if (!canPaste()) {
-            menu.getItem(PASTE_ID).setEnabled(false);
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case SELECT_TEXT_ID:
-                getCurrentEmulatorView().toggleSelectingText();
-                return true;
-            case COPY_ALL_ID:
-                doCopyAll();
-                return true;
-            case PASTE_ID:
-                doPaste();
-                return true;
-            case SEND_CONTROL_KEY_ID:
-                doSendControlKey();
-                return true;
-            case SEND_FN_KEY_ID:
-                doSendFnKey();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.edit_text)
+                .setItems(mTermMenuItems, new OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                int id = mTermMenuItems[which].getId();
+                                switch (id) {
+                                    case SELECT_TEXT_ID:
+                                        getCurrentEmulatorView().toggleSelectingText();
+                                        break;
+                                    case COPY_ALL_ID:
+                                        doCopyAll();
+                                        break;
+                                    case PASTE_ID:
+                                        doPaste();
+                                        break;
+                                    case SEND_CONTROL_KEY_ID:
+                                        doSendControlKey();
+                                        break;
+                                    case SEND_FN_KEY_ID:
+                                        doSendFnKey();
+                                        break;
+                                }
+                            }
+                        })
+                .setPositiveButton(android.R.string.no, null)
+                .show();
     }
 
     @Override
@@ -1287,7 +1291,6 @@ public class Term extends ActivityBase implements UpdateCallback {
     private void doToggleSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-
     }
 
     @SuppressLint("Wakelock")
@@ -1360,7 +1363,7 @@ public class Term extends ActivityBase implements UpdateCallback {
         PackageManager pm = getPackageManager();
         final List<ResolveInfo> handlers = pm
                 .queryIntentActivities(openLink, 0);
-        final Runnable openlink = new Runnable() {
+        final Runnable openLinkRunnable = new Runnable() {
             @Override
             public void run() {
                 if (handlers.size() > 0)
@@ -1375,8 +1378,43 @@ public class Term extends ActivityBase implements UpdateCallback {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface arg0, int arg1) {
-                                mHandler.post(openlink);
+                                mHandler.post(openLinkRunnable);
                             }
                         }).setNegativeButton(android.R.string.no, null).show();
+    }
+
+
+    private class TermMenuItem implements CharSequence {
+        private int id;
+        private String title;
+
+        public TermMenuItem(int id, String title) {
+            this.id = id;
+            this.title = title;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        @Override
+        public int length() {
+            return title.length();
+        }
+
+        @Override
+        public char charAt(int index) {
+            return title.charAt(index);
+        }
+
+        @Override
+        public CharSequence subSequence(int start, int end) {
+            return title.subSequence(start, end);
+        }
+
+        @Override
+        public String toString() {
+            return title;
+        }
     }
 }
