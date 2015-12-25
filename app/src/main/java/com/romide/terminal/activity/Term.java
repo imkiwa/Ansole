@@ -18,7 +18,6 @@ package com.romide.terminal.activity;
 
 import java.io.IOException;
 import java.text.Collator;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -558,11 +557,11 @@ public class Term extends ActivityBase implements UpdateCallback {
             String action = intent.getAction();
             if ((flags & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0
                     && action != null) {
-                if (action.equals(RemoteInterface.PRIVACT_OPEN_NEW_WINDOW)) {
+                if (action.equals(RemoteInterface.PRIVATE_OPEN_NEW_WINDOW)) {
                     mViewFlipper.setDisplayedChild(mTermSessions.size() - 1);
-                } else if (action.equals(RemoteInterface.PRIVACT_SWITCH_WINDOW)) {
+                } else if (action.equals(RemoteInterface.PRIVATE_SWITCH_WINDOW)) {
                     int target = intent.getIntExtra(
-                            RemoteInterface.PRIVEXTRA_TARGET_WINDOW, -1);
+                            RemoteInterface.PRIVATE_EXTRA_TARGET_WINDOW, -1);
                     if (target >= 0) {
                         mViewFlipper.setDisplayedChild(target);
                     }
@@ -1060,7 +1059,7 @@ public class Term extends ActivityBase implements UpdateCallback {
             return;
         }
 
-        if (action.equals(RemoteInterface.PRIVACT_OPEN_NEW_WINDOW)) {
+        if (action.equals(RemoteInterface.PRIVATE_OPEN_NEW_WINDOW)) {
             // New session was created, add an EmulatorView to match
             SessionList sessions = mTermSessions;
             if (sessions == null) {
@@ -1074,9 +1073,9 @@ public class Term extends ActivityBase implements UpdateCallback {
 
             mViewFlipper.addView(view);
             onResumeSelectWindow = position;
-        } else if (action.equals(RemoteInterface.PRIVACT_SWITCH_WINDOW)) {
+        } else if (action.equals(RemoteInterface.PRIVATE_SWITCH_WINDOW)) {
             int target = intent.getIntExtra(
-                    RemoteInterface.PRIVEXTRA_TARGET_WINDOW, -1);
+                    RemoteInterface.PRIVATE_EXTRA_TARGET_WINDOW, -1);
             if (target >= 0) {
                 onResumeSelectWindow = target;
             }

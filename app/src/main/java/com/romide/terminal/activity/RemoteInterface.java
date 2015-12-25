@@ -33,6 +33,8 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.kiva.termit.TermCaller;
+import com.kiva.termit.TermConstant;
 import com.romide.terminal.emulatorview.TermSession;
 import com.romide.terminal.service.TermService;
 import com.romide.terminal.util.GenericTermSession;
@@ -50,20 +52,9 @@ import com.romide.terminal.util.TermSettings;
  * The old procedure of using Intent.Extra is still available but is discouraged.
  */
 public class RemoteInterface extends Activity {
-	private static final String ACTION_RUN_SCRIPT = "jackpal.androidterm.RUN_SCRIPT";
-
-	static final String PRIVACT_OPEN_NEW_WINDOW = "jackpal.androidterm.private.OPEN_NEW_WINDOW";
-	static final String PRIVACT_SWITCH_WINDOW = "jackpal.androidterm.private.SWITCH_WINDOW";
-
-	private static final String EXTRA_WINDOW_HANDLE = "jackpal.androidterm.window_handle";
-	private static final String EXTRA_INITIAL_COMMAND = "jackpal.androidterm.iInitialCommand";
-	private static final String EXTRA_WINDOW_TITLE = "jackpal.androidterm.iWindowTitle";
-
-	private static final String EXTRA_SHORT_WINDOW_HANDLE = "handle";
-	private static final String EXTRA_SHORT_INITIAL_COMMAND = "cmd";
-	private static final String EXTRA_SHORT_WINDOW_TITLE = "title";
-
-	static final String PRIVEXTRA_TARGET_WINDOW = "jackpal.androidterm.private.target_window";
+	static final String PRIVATE_OPEN_NEW_WINDOW = "jackpal.androidterm.private.OPEN_NEW_WINDOW";
+	static final String PRIVATE_SWITCH_WINDOW = "jackpal.androidterm.private.SWITCH_WINDOW";
+	static final String PRIVATE_EXTRA_TARGET_WINDOW = "jackpal.androidterm.private.target_window";
 
 	private TermSettings mSettings;
 
@@ -99,27 +90,27 @@ public class RemoteInterface extends Activity {
 	}
 
 	private String getExtraWindowHandle(Intent i) {
-		String handle = i.getStringExtra(EXTRA_WINDOW_HANDLE);
+		String handle = i.getStringExtra(TermConstant.EXTRA_WINDOW_HANDLE);
 		if (handle == null) {
-			handle = i.getStringExtra(EXTRA_SHORT_WINDOW_HANDLE);
+			handle = i.getStringExtra(TermConstant.EXTRA_SHORT_WINDOW_HANDLE);
 		}
 
 		return handle;
 	}
 
 	private String getExtraWindowTitle(Intent i) {
-		String handle = i.getStringExtra(EXTRA_WINDOW_TITLE);
+		String handle = i.getStringExtra(TermConstant.EXTRA_WINDOW_TITLE);
 		if (handle == null) {
-			handle = i.getStringExtra(EXTRA_SHORT_WINDOW_TITLE);
+			handle = i.getStringExtra(TermConstant.EXTRA_SHORT_WINDOW_TITLE);
 		}
 
 		return handle;
 	}
 
 	private String getExtraCommand(Intent i) {
-		String handle = i.getStringExtra(EXTRA_INITIAL_COMMAND);
+		String handle = i.getStringExtra(TermConstant.EXTRA_INITIAL_COMMAND);
 		if (handle == null) {
-			handle = i.getStringExtra(EXTRA_SHORT_INITIAL_COMMAND);
+			handle = i.getStringExtra(TermConstant.EXTRA_SHORT_INITIAL_COMMAND);
 		}
 
 		return handle;
@@ -135,7 +126,7 @@ public class RemoteInterface extends Activity {
 
 		Intent myIntent = getIntent();
 		String action = myIntent.getAction();
-		if (action.equals(ACTION_RUN_SCRIPT)) {
+		if (action.equals(TermConstant.ACTION_RUN_SCRIPT)) {
 			/*
 			 * Someone with the appropriate permissions has asked us to run a
 			 * script
@@ -163,24 +154,6 @@ public class RemoteInterface extends Activity {
 					// Append any arguments.
 					if (null != (s = uri.getFragment()))
 						command += " " + s;
-				} else if (s != null && s.toLowerCase().equals("terminal")) {
-					Logger.d("terminal://run ===>");
-					String tmp = null;
-
-					tmp = uri.getQueryParameter(EXTRA_SHORT_WINDOW_HANDLE);
-					if (tmp != null) {
-						handle = tmp;
-					}
-
-					tmp = uri.getQueryParameter(EXTRA_SHORT_WINDOW_TITLE);
-					if (tmp != null) {
-						newWindowTitle = tmp;
-					}
-
-					tmp = uri.getQueryParameter(EXTRA_SHORT_INITIAL_COMMAND);
-					if (tmp != null) {
-						command = tmp;
-					}
 				}
 			}
 
@@ -203,7 +176,7 @@ public class RemoteInterface extends Activity {
 			}
 
 			Intent result = new Intent();
-			result.putExtra(EXTRA_WINDOW_HANDLE, handle);
+			result.putExtra(TermConstant.EXTRA_WINDOW_HANDLE, handle);
 			setResult(RESULT_OK, result);
 
 		} else if (action.equals(Intent.ACTION_SEND)
@@ -273,7 +246,7 @@ public class RemoteInterface extends Activity {
 				session.setTitle(windowTtitle);
 			}
 
-			Intent intent = new Intent(PRIVACT_OPEN_NEW_WINDOW);
+			Intent intent = new Intent(PRIVATE_OPEN_NEW_WINDOW);
 			intent.addCategory(Intent.CATEGORY_DEFAULT);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);
@@ -312,10 +285,10 @@ public class RemoteInterface extends Activity {
 			target.write('\r');
 		}
 
-		Intent intent = new Intent(PRIVACT_SWITCH_WINDOW);
+		Intent intent = new Intent(PRIVATE_SWITCH_WINDOW);
 		intent.addCategory(Intent.CATEGORY_DEFAULT);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.putExtra(PRIVEXTRA_TARGET_WINDOW, index);
+		intent.putExtra(PRIVATE_EXTRA_TARGET_WINDOW, index);
 		startActivity(intent);
 
 		return handle;

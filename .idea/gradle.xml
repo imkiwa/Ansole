@@ -11,12 +11,16 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/termit" />
+            <option value="$PROJECT_DIR$/termitexample" />
           </set>
         </option>
         <option name="myModules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/termit" />
+            <option value="$PROJECT_DIR$/termitexample" />
           </set>
         </option>
       </GradleProjectSettings>

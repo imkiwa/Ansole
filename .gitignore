@@ -5,4 +5,6 @@ local.properties
 .DS_Store
 build
 app/bulid
+termit/bulid
+termitexample/bulid
 captures
