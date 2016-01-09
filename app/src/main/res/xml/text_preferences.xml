@@ -9,6 +9,7 @@
             android:key="fontsize"
             android:summary="@string/summary_fontsize_preference"
             android:title="@string/title_fontsize_preference"/>
+
         <ListPreference
             android:defaultValue="@string/pref_color_default"
             android:dialogTitle="@string/dialog_title_color_preference"
@@ -17,6 +18,25 @@
             android:key="color"
             android:summary="@string/summary_color_preference"
             android:title="@string/title_color_preference"/>
+
+        <ListPreference
+            android:defaultValue="@string/pref_cursorblink_default"
+            android:dialogTitle="@string/dialog_title_cursorblink_preference"
+            android:entries="@array/entries_cursorblink_preference"
+            android:entryValues="@array/entryvalues_cursorblink_preference"
+            android:key="cursorBlink"
+            android:summary="@string/summary_cursorblink_preference"
+            android:title="@string/title_cursorblink_preference"/>
+
+        <ListPreference
+            android:defaultValue="@string/pref_cursorblink_period_default"
+            android:dialogTitle="@string/dialog_title_cursorblink_period_preference"
+            android:entries="@array/entries_cursorblink_period_preference"
+            android:entryValues="@array/entryvalues_cursorblink_period_preference"
+            android:key="cursorBlinkPeriod"
+            android:dependency="cursorBlink"
+            android:summary="@string/summary_cursorblink_period_preference"
+            android:title="@string/title_cursorblink_period_preference"/>
 
         <CheckBoxPreference
             android:defaultValue="@bool/pref_utf8_by_default_default"

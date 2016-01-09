@@ -72,6 +72,9 @@
     <string name="title_cursorblink_preference">Cursor blink</string>
     <string name="summary_cursorblink_preference">Choose cursor blink.</string>
     <string name="dialog_title_cursorblink_preference">Cursor blink</string>
+    <string name="title_cursorblink_period_preference">Cursor blink period</string>
+    <string name="summary_cursorblink_period_preference">Choose cursor blink period.</string>
+    <string name="dialog_title_cursorblink_period_preference">Cursor blink period</string>
     <string name="text_preferences">Text</string>
     <string name="title_utf8_by_default_preference">Default to UTF-8</string>
     <string name="summary_utf8_by_default_preference">Whether UTF-8 mode is enabled by default.</string>

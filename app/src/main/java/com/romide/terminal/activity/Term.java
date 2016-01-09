@@ -16,21 +16,13 @@
 
 package com.romide.terminal.activity;
 
-import java.io.IOException;
-import java.text.Collator;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
-import android.support.v7.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -48,6 +40,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
@@ -83,7 +76,6 @@ import com.romide.terminal.emulatorview.UpdateCallback;
 import com.romide.terminal.emulatorview.compat.ClipboardManagerCompat;
 import com.romide.terminal.emulatorview.compat.ClipboardManagerCompatFactory;
 import com.romide.terminal.emulatorview.compat.KeycodeConstants;
-import com.romide.terminal.reciver.TermFunctionReciver;
 import com.romide.terminal.service.TermService;
 import com.romide.terminal.util.GenericTermSession;
 import com.romide.terminal.util.SessionList;
@@ -92,6 +84,12 @@ import com.romide.terminal.util.TermDebug;
 import com.romide.terminal.util.TermSettings;
 import com.romide.terminal.view.TermView;
 import com.romide.terminal.view.TermViewFlipper;
+
+import java.io.IOException;
+import java.text.Collator;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A terminal emulator activity.
@@ -170,7 +168,7 @@ public class Term extends ActivityBase implements UpdateCallback {
     private ServiceConnection mTSConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i(TermDebug.LOG_TAG, "Connect to service successfuly");
+            Log.i(TermDebug.LOG_TAG, "Connected to service");
             TermService.TSBinder binder = (TermService.TSBinder) service;
             mTermService = binder.getService();
             if (mPendingPathBroadcasts <= 0) {
@@ -364,7 +362,6 @@ public class Term extends ActivityBase implements UpdateCallback {
 
     @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler();
-    private TermFunctionReciver mFunctionReciver;
     private String lastInputHost;
     private AppCompatEditText mHostInputEdit;
     private final DialogInterface.OnClickListener sshClientDialogClick = new OnClickListener() {
@@ -501,11 +498,6 @@ public class Term extends ActivityBase implements UpdateCallback {
 
         updatePrefs();
         mAlreadyStarted = true;
-
-        mFunctionReciver = new TermFunctionReciver(getCurrentTermSession());
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(TermFunctionReciver.ACTION);
-        registerReceiver(mFunctionReciver, filter);
     }
 
     private String makePathFromBundle(Bundle extras) {
@@ -635,8 +627,6 @@ public class Term extends ActivityBase implements UpdateCallback {
         if (mWifiLock.isHeld()) {
             mWifiLock.release();
         }
-
-        unregisterReceiver(mFunctionReciver);
     }
 
     private void restart() {
@@ -740,7 +730,6 @@ public class Term extends ActivityBase implements UpdateCallback {
             case 1:
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 break;
-
             case 2:
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 break;
@@ -1087,29 +1076,29 @@ public class Term extends ActivityBase implements UpdateCallback {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.edit_text)
                 .setItems(mTermMenuItems, new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                int id = mTermMenuItems[which].getId();
-                                switch (id) {
-                                    case SELECT_TEXT_ID:
-                                        getCurrentEmulatorView().toggleSelectingText();
-                                        break;
-                                    case COPY_ALL_ID:
-                                        doCopyAll();
-                                        break;
-                                    case PASTE_ID:
-                                        doPaste();
-                                        break;
-                                    case SEND_CONTROL_KEY_ID:
-                                        doSendControlKey();
-                                        break;
-                                    case SEND_FN_KEY_ID:
-                                        doSendFnKey();
-                                        break;
-                                }
-                            }
-                        })
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        int id = mTermMenuItems[which].getId();
+                        switch (id) {
+                            case SELECT_TEXT_ID:
+                                getCurrentEmulatorView().toggleSelectingText();
+                                break;
+                            case COPY_ALL_ID:
+                                doCopyAll();
+                                break;
+                            case PASTE_ID:
+                                doPaste();
+                                break;
+                            case SEND_CONTROL_KEY_ID:
+                                doSendControlKey();
+                                break;
+                            case SEND_FN_KEY_ID:
+                                doSendFnKey();
+                                break;
+                        }
+                    }
+                })
                 .setPositiveButton(android.R.string.no, null)
                 .show();
     }
@@ -1133,8 +1122,8 @@ public class Term extends ActivityBase implements UpdateCallback {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-		/*
-		 * The pre-Eclair default implementation of onKeyDown() would prevent
+        /*
+         * The pre-Eclair default implementation of onKeyDown() would prevent
 		 * our handling of the Back key in onKeyUp() from taking effect, so
 		 * ignore it here
 		 */

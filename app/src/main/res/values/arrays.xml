@@ -44,6 +44,15 @@
         <item>Vertical bar</item>
     </string-array>
 
+    <string-array name="entries_cursorblink_period_preference">
+        <item>1s</item>
+        <item>0.9s</item>
+        <item>0.8s</item>
+        <item>0.7s</item>
+        <item>0.6s</item>
+        <item>0.5s</item>
+    </string-array>
+
     <string-array name="entries_fontsize_preference">
         <item>4 x 8 pixels</item>
         <item>6 pt</item>
@@ -79,6 +88,7 @@
         <item>Solarized Light</item>
         <item>Solarized Dark</item>
         <item>Linux Console</item>
+        <item>Sublime Monokai</item>
     </string-array>
 
     <string-array name="entries_backaction_preference">

@@ -8,8 +8,8 @@ android {
         applicationId "com.romide.terminal"
         minSdkVersion 11
         targetSdkVersion 21
-        versionName "3.0.1"
-        versionCode 110
+        versionName "3.0.2"
+        versionCode 114
     }
 	
     signingConfigs {

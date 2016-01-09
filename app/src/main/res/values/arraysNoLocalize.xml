@@ -46,6 +46,15 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="entryvalues_cursorblink_period_preference" translatable="false">
+        <item>1000</item>
+        <item>900</item>
+        <item>800</item>
+        <item>700</item>
+        <item>600</item>
+        <item>500</item>
+    </string-array>
+
     <!-- Note: Must also modify the maximum allowed preference value in TermSettings.readPrefs -->
     <string-array name="entryvalues_fontsize_preference" translatable="false">
         <item>0</item>
@@ -82,6 +91,7 @@
         <item>7</item>
         <item>8</item>
         <item>9</item>
+        <item>10</item>
     </string-array>
 
     <string-array name="entryvalues_backaction_preference" translatable="false">

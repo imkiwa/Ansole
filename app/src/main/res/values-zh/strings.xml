@@ -67,6 +67,9 @@
     <string name="title_cursorblink_preference">光标闪烁</string>
     <string name="summary_cursorblink_preference">选择光标闪烁模式</string>
     <string name="dialog_title_cursorblink_preference">光标闪烁</string>
+    <string name="title_cursorblink_period_preference">光标闪烁间隔</string>
+    <string name="summary_cursorblink_period_preference">选择光标闪烁间隔</string>
+    <string name="dialog_title_cursorblink_period_preference">光标闪烁间隔</string>
     <string name="text_preferences">显示</string>
     <string name="title_utf8_by_default_preference">UTF-8 编码</string>
     <string name="summary_utf8_by_default_preference">支持多语言</string>

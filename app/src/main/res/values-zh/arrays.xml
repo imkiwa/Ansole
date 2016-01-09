@@ -44,6 +44,15 @@
         <item>竖线</item>
     </string-array>
 
+    <string-array name="entries_cursorblink_period_preference">
+        <item>1秒</item>
+        <item>0.9秒</item>
+        <item>0.8秒</item>
+        <item>0.7秒</item>
+        <item>0.6秒</item>
+        <item>0.5秒</item>
+    </string-array>
+
     <string-array name="entries_fontsize_preference">
         <item>4 x 8 像素</item>
         <item>6 磅</item>
@@ -76,9 +85,10 @@
         <item>黑底黄字</item>
         <item>黑底红字</item>
         <item>Holo 风格</item>
-        <item>爆光过度</item>
-        <item>爆光不足</item>
-        <item>Linux 终端</item>
+        <item>Solarized 亮风格</item>
+        <item>Solarized 暗风格</item>
+        <item>Linux</item>
+        <item>Monokai</item>
     </string-array>
 
     <string-array name="entries_backaction_preference">
@@ -112,8 +122,8 @@
     </string-array>
 
     <string-array name="entries_ime_preference">
-        <item>字本</item>
-        <item>词本</item>
+        <item>基于字母</item>
+        <item>基于单词</item>
     </string-array>
 
     <!-- These are the 'short' names for the control keys. They are used in the special keys dialog. -->
