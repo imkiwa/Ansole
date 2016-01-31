@@ -46,6 +46,7 @@ import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.widget.Scroller;
+import android.widget.Toast;
 
 import com.romide.terminal.emulatorview.compat.ClipboardManagerCompat;
 import com.romide.terminal.emulatorview.compat.ClipboardManagerCompatFactory;

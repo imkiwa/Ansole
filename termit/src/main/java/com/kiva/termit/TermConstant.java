@@ -2,6 +2,8 @@ package com.kiva.termit;
 
 
 public class TermConstant {
+    public static final String TERM_PACKAGE_NAME = "com.romide.terminal";
+
     public static final String ACTION_RUN_SCRIPT = "jackpal.androidterm.RUN_SCRIPT";
     public static final String EXTRA_WINDOW_HANDLE = "jackpal.androidterm.window_handle";
     public static final String EXTRA_INITIAL_COMMAND = "jackpal.androidterm.iInitialCommand";

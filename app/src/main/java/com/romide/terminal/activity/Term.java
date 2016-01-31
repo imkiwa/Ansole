@@ -60,6 +60,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -209,6 +211,7 @@ public class Term extends ActivityBase implements UpdateCallback {
     private int mActionBarMode = TermSettings.ACTION_BAR_MODE_NONE;
 
     private WindowListAdapter mWinListAdapter;
+    private Animation mWindowTitleAnim;
 
     private class WindowListActionBarAdapter extends WindowListAdapter
             implements UpdateCallback {
@@ -283,6 +286,7 @@ public class Term extends ActivityBase implements UpdateCallback {
                     // Right to left swipe -- next window
                     mViewFlipper.showNext();
                 }
+                showWindowTitleAnim();
                 return true;
             } else {
                 return false;
@@ -455,6 +459,8 @@ public class Term extends ActivityBase implements UpdateCallback {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mWindowTitleAnim = AnimationUtils.loadAnimation(this, R.anim.window_title_anim);
+
         mTermMenuItems[0] = new TermMenuItem(SELECT_TEXT_ID, getString(R.string.select_text));
         mTermMenuItems[1] = new TermMenuItem(COPY_ALL_ID, getString(R.string.copy_all));
         mTermMenuItems[2] = new TermMenuItem(PASTE_ID, getString(R.string.paste));
@@ -521,6 +527,17 @@ public class Term extends ActivityBase implements UpdateCallback {
 
         return path.substring(0, path.length() - 1);
     }
+
+    private void showWindowTitleAnim() {
+        // FIXME shadow after anim end
+//        if (mTermList == null) {
+//            return;
+//        }
+//
+//        final View root = mTermList.getSelectedView();
+//        root.startAnimation(mWindowTitleAnim);
+    }
+
 
     private void populateViewFlipper() {
         if (mTermService != null) {
@@ -820,6 +837,8 @@ public class Term extends ActivityBase implements UpdateCallback {
             }
         }.start();
     }
+
+
 
     private boolean checkHaveFullHwKeyboard(Configuration c) {
         return (c.keyboard == Configuration.KEYBOARD_QWERTY)

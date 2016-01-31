@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.kiva.termit.TermCaller;
+import com.kiva.termit.TermUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private String handle;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        TermCaller.Builder builder = new TermCaller.Builder();
+        TermCaller.Builder builder = TermUtil.newTermRequest();
 
         if (handle == null) {
             builder.newWindow("TermItExample", "echo hello world");
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 123) {
-            handle = TermCaller.getResult(data);
+            handle = TermUtil.getIntentResult(data);
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);

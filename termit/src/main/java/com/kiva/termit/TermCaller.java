@@ -56,19 +56,10 @@ public class TermCaller {
         return action;
     }
 
-    public static String getResult(Intent resultData) {
-        if (resultData == null) {
-            return null;
-        }
-
-        String resultWindowHandle = resultData.getStringExtra(TermConstant.EXTRA_WINDOW_HANDLE);
-        return resultWindowHandle;
-    }
-
     public static class Builder {
         private final TermCaller caller;
 
-        public Builder() {
+        protected Builder() {
             caller = new TermCaller();
         }
 

@@ -1,9 +1,8 @@
 package com.romide.terminal;
 
 import android.app.Application;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 
+import com.kiva.termit.TermUtil;
 import com.romide.terminal.jni.KivaTerminal;
 
 public class App extends Application {
@@ -19,30 +18,21 @@ public class App extends Application {
 		app = this;
 
 		CrashHandler.getInstance().init();
-		initTerminalEnvironment();
+		initTermEnv();
 	}
 
-	private void initTerminalEnvironment() {
-		PackageManager pm = getPackageManager();
-
+	private void initTermEnv() {
 		try {
-			PackageInfo info = pm.getPackageInfo(getPackageName(),
-					PackageManager.GET_ACTIVITIES);
+			KivaTerminal.setEnv(ENV_VERSION, TermUtil.getTermVersionName(this));
+            KivaTerminal.setEnv(ENV_VERSION_CODE, TermUtil.getTermVersionCodeString(this));
 
-			KivaTerminal.setenv(ENV_VERSION, info.versionName,
-					KivaTerminal.REPLACE_YES);
-			KivaTerminal.setenv(ENV_VERSION_CODE,
-					String.valueOf(info.versionCode),
-					KivaTerminal.REPLACE_YES);
-		} catch (Exception neverHappen) {
-			neverHappen.printStackTrace();
+		} catch (TermUtil.TermNotInstalledException never) {
+            never.printStackTrace();
 		}
 
-		KivaTerminal.setenv(ENV_HOME, getFilesDir().getAbsolutePath(),
-				KivaTerminal.REPLACE_YES);
-		KivaTerminal.setenv(ENV_APK, getPackageCodePath(),
-				KivaTerminal.REPLACE_YES);
-	}
+		KivaTerminal.setEnv(ENV_HOME, getFilesDir().getAbsolutePath());
+        KivaTerminal.setEnv(ENV_APK, getPackageCodePath());
+    }
 
 	public static App get() {
 		return app;
