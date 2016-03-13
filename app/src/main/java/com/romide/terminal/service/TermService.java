@@ -68,8 +68,7 @@ public class TermService extends Service implements TermSession.FinishCallback
         mTermSessions = new SessionList();
 
         /* Put the service in the foreground. */
-        Intent notifyIntent = new Intent(this, Term.class);
-        notifyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent notifyIntent = Term.createTermIntent(this);
         
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notifyIntent, 0);
         Notification notification = createNotification(pendingIntent);
@@ -87,7 +86,6 @@ public class TermService extends Service implements TermSession.FinishCallback
         builder.setTicker(getText(R.string.service_notify_text));
         builder.setContentTitle(getText(R.string.application_terminal));
         builder.setContentText(getText(R.string.service_notify_text));
-
         return builder.build();
 	}
 

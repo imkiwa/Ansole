@@ -651,6 +651,13 @@ public class Term extends ActivityBase implements UpdateCallback {
         finish();
     }
 
+    public static Intent createTermIntent(Context context) {
+        Intent intent = new Intent(context, Term.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        return intent;
+    }
+
     protected static TermSession createTermSession(Context context,
                                                    TermSettings settings, String initialCommand) throws IOException {
         GenericTermSession session = new ShellTermSession(settings,
