@@ -16,7 +16,7 @@ android {
         release {
             keyAlias 'kiva'
             keyPassword 'wujialin'
-            storeFile file('F:/Android/kiva.keystore')
+            storeFile file('/home/kiva/devel/keystore/kiva.keystore')
             storePassword 'wujialin'
         }
     }
