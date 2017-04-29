@@ -34,8 +34,8 @@
     </string-array>
 
     <string-array name="entries_cursorblink_preference">
-        <item>非闪烁光标</item>
-        <item>闪烁光标</item>
+        <item>无</item>
+        <item>闪烁</item>
     </string-array>
 
     <string-array name="entries_cursorstyle_preference">
@@ -85,8 +85,8 @@
         <item>黑底黄字</item>
         <item>黑底红字</item>
         <item>Holo 风格</item>
-        <item>Solarized 亮风格</item>
-        <item>Solarized 暗风格</item>
+        <item>Solarized Light</item>
+        <item>Solarized Dark</item>
         <item>Linux</item>
         <item>Monokai</item>
     </string-array>
@@ -95,8 +95,8 @@
         <item>关闭所有窗口</item>
         <item>关闭当前窗口</item>
         <item>关闭当前实例，保留正在运行的会话</item>
-        <item>给终端发送 ESC</item>
-        <item>给终端发送 TAB</item>
+        <item>给终端发送 Esc</item>
+        <item>给终端发送 Tab</item>
     </string-array>
 
     <string-array name="entries_controlkey_preference">
@@ -122,8 +122,8 @@
     </string-array>
 
     <string-array name="entries_ime_preference">
-        <item>基于字母</item>
-        <item>基于单词</item>
+        <item>字母输入</item>
+        <item>单词输入</item>
     </string-array>
 
     <!-- These are the 'short' names for the control keys. They are used in the special keys dialog. -->

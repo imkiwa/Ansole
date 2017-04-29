@@ -1,5 +1,7 @@
 package com.romide.terminal.compat;
 
+import android.os.Build;
+
 /**
  * The classes in this package take advantage of the fact that the VM does
  * not attempt to load a class until it's accessed, and the verifier
@@ -18,24 +20,6 @@ public class AndroidCompat {
 
     @SuppressWarnings("deprecation")
 	private final static int getSDK() {
-        int result;
-        try {
-            result = AndroidLevel4PlusCompat.getSDKInt();
-        } catch (VerifyError e) {
-            // We must be at an SDK level less than 4.
-            try {
-                result = Integer.valueOf(android.os.Build.VERSION.SDK);
-            } catch (NumberFormatException e2) {
-                // Couldn't parse string, assume the worst.
-                result = 1;
-            }
-        }
-        return result;
-    }
-}
-
-class AndroidLevel4PlusCompat {
-    static int getSDKInt() {
-        return android.os.Build.VERSION.SDK_INT;
+        return Build.VERSION.SDK_INT;
     }
 }

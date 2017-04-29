@@ -22,7 +22,7 @@ import android.util.DisplayMetrics;
 import com.romide.terminal.emulatorview.ColorScheme;
 import com.romide.terminal.emulatorview.EmulatorView;
 import com.romide.terminal.emulatorview.TermSession;
-import com.romide.terminal.util.TermSettings;
+import com.romide.terminal.session.TermSettings;
 
 public class TermView extends EmulatorView {
 

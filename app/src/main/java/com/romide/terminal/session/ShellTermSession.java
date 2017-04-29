@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.romide.terminal.util;
+package com.romide.terminal.session;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +28,7 @@ import android.util.Log;
 
 import com.romide.terminal.Exec;
 import com.romide.terminal.compat.FileCompat;
+import com.romide.terminal.util.TermDebug;
 
 /**
  * A terminal session, controlling the process attached to the session (usually
@@ -35,7 +36,7 @@ import com.romide.terminal.compat.FileCompat;
  * upon stopping.
  */
 public class ShellTermSession extends GenericTermSession {
-    private int mProcId;
+    private int mPid;
     private Thread mWatcherThread;
 
     private String mInitialCommand;
@@ -67,8 +68,8 @@ public class ShellTermSession extends GenericTermSession {
         mWatcherThread = new Thread() {
             @Override
             public void run() {
-                Log.i(TermDebug.LOG_TAG, "waiting for: " + mProcId);
-                int result = Exec.waitFor(mProcId);
+                Log.i(TermDebug.LOG_TAG, "waiting for: " + mPid);
+                int result = Exec.waitFor(mPid);
                 Log.i(TermDebug.LOG_TAG, "Subprocess exited: " + result);
                 mMsgHandler.sendMessage(mMsgHandler.obtainMessage(PROCESS_EXITED, result));
             }
@@ -101,7 +102,7 @@ public class ShellTermSession extends GenericTermSession {
         env[1] = "PATH=" + path;
         env[2] = "HOME=" + settings.getHomePath();
 
-        mProcId = createSubprocess(settings.getShell(), env);
+        mPid = createSubprocess(settings.getShell(), env);
     }
 
     private String checkPath(String path) {
@@ -220,6 +221,6 @@ public class ShellTermSession extends GenericTermSession {
      * from the terminal (for example, by the "nohup" utility).
      */
     void hangupProcessGroup() {
-        Exec.sendSignal(-mProcId, 1);
+        Exec.sendSignal(-mPid, 1);
     }
 }

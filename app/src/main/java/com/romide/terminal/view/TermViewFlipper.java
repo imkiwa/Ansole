@@ -35,8 +35,8 @@ import com.romide.terminal.compat.AndroidCompat;
 import com.romide.terminal.emulatorview.EmulatorView;
 import com.romide.terminal.emulatorview.TermSession;
 import com.romide.terminal.emulatorview.UpdateCallback;
-import com.romide.terminal.util.ShellTermSession;
-import com.romide.terminal.util.TermSettings;
+import com.romide.terminal.session.ShellTermSession;
+import com.romide.terminal.session.TermSettings;
 
 
 public class TermViewFlipper extends ViewFlipper implements Iterable<View> {

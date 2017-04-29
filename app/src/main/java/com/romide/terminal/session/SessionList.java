@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.romide.terminal.util;
+package com.romide.terminal.session;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

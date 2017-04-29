@@ -22,31 +22,26 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.ListViewCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.romide.terminal.R;
 import com.romide.terminal.adapter.WindowListAdapter;
-import com.romide.terminal.compat.ActionBarCompat;
-import com.romide.terminal.compat.ActivityCompat;
-import com.romide.terminal.compat.AndroidCompat;
 import com.romide.terminal.service.TermService;
-import com.romide.terminal.util.SessionList;
+import com.romide.terminal.session.SessionList;
 import com.romide.terminal.util.TermDebug;
 
-public class WindowList extends ActivityBase {
+public class WindowListActivity extends ActivityBase {
     private SessionList sessions;
     private WindowListAdapter mWindowListAdapter;
     private TermService mTermService;
 
     private ListView listView;
 
-    private ServiceConnection mTSConnection = new ServiceConnection() {
+    private ServiceConnection mTermServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             TermService.TSBinder binder = (TermService.TSBinder) service;
@@ -93,7 +88,7 @@ public class WindowList extends ActivityBase {
         super.onResume();
 
         Intent TSIntent = new Intent(this, TermService.class);
-        if (!bindService(TSIntent, mTSConnection, BIND_AUTO_CREATE)) {
+        if (!bindService(TSIntent, mTermServiceConnection, BIND_AUTO_CREATE)) {
             Log.w(TermDebug.LOG_TAG, "bind to service failed!");
         }
     }
@@ -110,7 +105,7 @@ public class WindowList extends ActivityBase {
         if (adapter != null) {
             adapter.setSessions(null);
         }
-        unbindService(mTSConnection);
+        unbindService(mTermServiceConnection);
     }
 
     private void populateList() {

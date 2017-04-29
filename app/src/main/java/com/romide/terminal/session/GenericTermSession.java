@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.romide.terminal.util;
+package com.romide.terminal.session;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -49,6 +49,8 @@ public class GenericTermSession extends TermSession {
     final ParcelFileDescriptor mTermFd;
 
     TermSettings mSettings;
+
+    private boolean shellClosed;
 
     public static final int PROCESS_EXIT_FINISHES_SESSION = 0;
     public static final int PROCESS_EXIT_DISPLAYS_MESSAGE = 1;
@@ -87,6 +89,7 @@ public class GenericTermSession extends TermSession {
 
         setPtyUTF8Mode(getUTF8Mode());
         setUTF8ModeUpdateCallback(mUTF8ModeNotify);
+        shellClosed = false;
     }
 
     @Override
@@ -111,6 +114,7 @@ public class GenericTermSession extends TermSession {
         if (mSettings.closeWindowOnProcessExit()) {
             finish();
         } else if (mProcessExitMessage != null) {
+            shellClosed = true;
             try {
                 byte[] msg = ("\r\n[" + mProcessExitMessage + "]").getBytes("UTF-8");
                 appendToEmulator(msg, 0, msg.length);
@@ -230,5 +234,9 @@ public class GenericTermSession extends TermSession {
                 throw new IOException("Unable to obtain file descriptor on this OS version: " + e.getMessage());
             }
         }
+    }
+
+    public boolean isShellClosed() {
+        return shellClosed;
     }
 }

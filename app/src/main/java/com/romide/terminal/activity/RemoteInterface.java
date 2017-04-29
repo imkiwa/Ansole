@@ -33,16 +33,14 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.kiva.termit.TermCaller;
 import com.kiva.termit.TermConstant;
 import com.romide.terminal.emulatorview.TermSession;
 import com.romide.terminal.service.TermService;
-import com.romide.terminal.util.GenericTermSession;
-import com.romide.terminal.util.Logger;
-import com.romide.terminal.util.SessionList;
-import com.romide.terminal.util.ShellTermSession;
+import com.romide.terminal.session.GenericTermSession;
+import com.romide.terminal.session.SessionList;
+import com.romide.terminal.session.ShellTermSession;
 import com.romide.terminal.util.TermDebug;
-import com.romide.terminal.util.TermSettings;
+import com.romide.terminal.session.TermSettings;
 
 /*
  * New procedure for launching a command in ATE.

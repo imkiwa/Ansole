@@ -19,7 +19,7 @@
 	<string translatable="false" name="pref_shell_default">/system/bin/sh -</string>
 	<string translatable="false" name="pref_initialcommand_default"></string>
 	<string translatable="false" name="pref_termtype_default">screen</string>
-	<bool name="pref_close_window_on_process_exit_default">true</bool>
+	<bool name="pref_close_window_on_process_exit_default">false</bool>
 	<bool name="pref_verify_path_default">true</bool>
 	<bool name="pref_do_path_extensions_default">true</bool>
 	<bool name="pref_allow_prepend_path_default">true</bool>
@@ -27,13 +27,10 @@
 	<bool name="pref_mouse_tracking_default">true</bool>
 	<bool name="pref_terminal_beep_default">true</bool>
 	<bool name="pref_use_keyboard_shortcuts_default">true</bool>
-	
-	
-	
-	<string translatable="false" name="pref_external_shell_default">/system/bin/bash -</string>
+	<string translatable="false" name="pref_external_shell_default">/system/xbin/bash -</string>
 	<string translatable="false" name="pref_external_profile_default">/system/etc/profile</string>
 	<bool name="pref_external_use_login">false</bool>
 	<bool name="pref_external_use_profile">false</bool>
 	<bool name="pref_start_on_boot">false</bool>
-	<bool name="pref_auto_su">true</bool>
+	<bool name="pref_auto_su">false</bool>
 </resources>

@@ -1,4 +1,4 @@
-package com.romide.terminal;
+package com.romide.terminal.util;
 
 import static com.romide.terminal.util.Constant.CRASH_REPORTER_EXTENSION;
 import static com.romide.terminal.util.Constant.STACK_TRACE;
@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.Properties;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -29,7 +28,8 @@ import android.os.Looper;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.romide.terminal.util.Logger;
+import com.romide.terminal.App;
+import com.romide.terminal.R;
 
 public class CrashHandler implements UncaughtExceptionHandler {
     private Thread.UncaughtExceptionHandler defaultHandler;

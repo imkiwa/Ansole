@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class Logger {
 	
-	public static final String TAG = "Terminal";
+	public static final String TAG = "Ansole";
 	
 	public static void i(Object msg) {
 		Log.i(TAG, msg.toString());

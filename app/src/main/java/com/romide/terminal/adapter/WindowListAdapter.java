@@ -27,8 +27,8 @@ import android.widget.TextView;
 import com.romide.terminal.R;
 import com.romide.terminal.emulatorview.TermSession;
 import com.romide.terminal.emulatorview.UpdateCallback;
-import com.romide.terminal.util.SessionList;
-import com.romide.terminal.util.ShellTermSession;
+import com.romide.terminal.session.SessionList;
+import com.romide.terminal.session.ShellTermSession;
 
 
 public class WindowListAdapter extends BaseAdapter implements UpdateCallback {

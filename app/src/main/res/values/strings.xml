@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="application_terminal">Terminal</string>
+    <string name="application_terminal">Ansole</string>
     <string name="input_password">Input your password</string>
     <string name="password_worng">Password not correct.</string>
-    <string name="connected">[Connected to %s] </string>
     <string name="open_link">Open url %s</string>
     <string name="see_dump">Application has been crashed, see %s for crash dump.</string>
     <string name="title_open_password">Enable password</string>
@@ -25,7 +24,6 @@
     <string name="preferences">Preferences</string>
     <string name="input_window_title">Input window title</string>
     <string name="menu_set_title">Set window title</string>
-    <string name="menu_ssh">SSH clent</string>
     <string name="new_window">New window</string>
     <string name="close_window">Close window</string>
     <string name="window_list">Windows</string>
@@ -33,13 +31,10 @@
     <string name="next_window">Next window</string>
     <string name="reset">Reset term</string>
     <string name="send_email">Email to</string>
-    <string name="special_keys">Special keys</string>
     <string name="toggle_soft_keyboard">Toggle soft keyboard</string>
     <string name="reset_toast_notification">This window\'s terminal state has been reset.</string>
     <string name="enable_wakelock">Take WakeLock</string>
     <string name="disable_wakelock">Drop WakeLock</string>
-    <string name="enable_wifilock">Take WifiLock</string>
-    <string name="disable_wifilock">Drop WifiLock</string>
     <string name="edit_text">Edit text</string>
     <string name="select_text">Select text</string>
     <string name="copy_all">Copy all</string>

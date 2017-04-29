@@ -17,23 +17,19 @@
 package com.romide.terminal.service;
 
 import android.app.Notification;
-import android.app.Notification.Builder;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.romide.terminal.R;
 import com.romide.terminal.activity.Term;
 import com.romide.terminal.compat.ServiceForegroundCompat;
 import com.romide.terminal.emulatorview.TermSession;
-import com.romide.terminal.util.SessionList;
+import com.romide.terminal.session.SessionList;
 
 public class TermService extends Service implements TermSession.FinishCallback
 {

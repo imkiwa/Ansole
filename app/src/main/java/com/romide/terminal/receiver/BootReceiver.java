@@ -1,4 +1,4 @@
-package com.romide.terminal.reciver;
+package com.romide.terminal.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.preference.PreferenceManager;
 
 import com.romide.terminal.activity.Term;
-import com.romide.terminal.util.TermSettings;
+import com.romide.terminal.session.TermSettings;
 
-public class BootReciver extends BroadcastReceiver {
+public class BootReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(final Context context, Intent intent) {

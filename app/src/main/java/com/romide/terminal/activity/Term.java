@@ -29,13 +29,10 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -45,7 +42,6 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -60,8 +56,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -79,11 +73,12 @@ import com.romide.terminal.emulatorview.compat.ClipboardManagerCompat;
 import com.romide.terminal.emulatorview.compat.ClipboardManagerCompatFactory;
 import com.romide.terminal.emulatorview.compat.KeycodeConstants;
 import com.romide.terminal.service.TermService;
-import com.romide.terminal.util.GenericTermSession;
-import com.romide.terminal.util.SessionList;
-import com.romide.terminal.util.ShellTermSession;
+import com.romide.terminal.session.GenericTermSession;
+import com.romide.terminal.session.SessionList;
+import com.romide.terminal.session.ShellTermSession;
+import com.romide.terminal.session.TermSettings;
 import com.romide.terminal.util.TermDebug;
-import com.romide.terminal.util.TermSettings;
+import com.romide.terminal.util.UiKit;
 import com.romide.terminal.view.TermView;
 import com.romide.terminal.view.TermViewFlipper;
 
@@ -128,23 +123,18 @@ public class Term extends ActivityBase implements UpdateCallback {
     private boolean mAlreadyStarted = false;
     private boolean mStopServiceOnFinish = false;
 
-    private Intent TSIntent;
+    private Intent mTermServiceIntent;
 
     public static final int REQUEST_CHOOSE_WINDOW = 1;
-    public static final String EXTRA_WINDOW_ID = "jackpal.androidterm.window_id";
+    public static final String EXTRA_WINDOW_ID = "terminal.window_id";
     private int onResumeSelectWindow = -1;
 
     private PowerManager.WakeLock mWakeLock;
-    private WifiManager.WifiLock mWifiLock;
-    // Available on API 12 and later
-    private static final int WIFI_MODE_FULL_HIGH_PERF = 3;
 
-    private boolean mBackKeyPressed;
-
-    private static final String ACTION_PATH_BROADCAST = "jackpal.androidterm.broadcast.APPEND_TO_PATH";
-    private static final String ACTION_PATH_PREPEND_BROADCAST = "jackpal.androidterm.broadcast.PREPEND_TO_PATH";
-    private static final String PERMISSION_PATH_BROADCAST = "jackpal.androidterm.permission.APPEND_TO_PATH";
-    private static final String PERMISSION_PATH_PREPEND_BROADCAST = "jackpal.androidterm.permission.PREPEND_TO_PATH";
+    private static final String ACTION_PATH_BROADCAST = "terminal.broadcast.APPEND_TO_PATH";
+    private static final String ACTION_PATH_PREPEND_BROADCAST = "terminal.broadcast.PREPEND_TO_PATH";
+    private static final String PERMISSION_PATH_BROADCAST = "terminal.permission.APPEND_TO_PATH";
+    private static final String PERMISSION_PATH_PREPEND_BROADCAST = "terminal.permission.PREPEND_TO_PATH";
     private int mPendingPathBroadcasts = 0;
     private BroadcastReceiver mPathReceiver = new BroadcastReceiver() {
         @Override
@@ -167,7 +157,7 @@ public class Term extends ActivityBase implements UpdateCallback {
     private static final int FLAG_INCLUDE_STOPPED_PACKAGES = 0x20;
 
     private TermService mTermService;
-    private ServiceConnection mTSConnection = new ServiceConnection() {
+    private ServiceConnection mTermServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i(TermDebug.LOG_TAG, "Connected to service");
@@ -202,7 +192,7 @@ public class Term extends ActivityBase implements UpdateCallback {
             long now = System.currentTimeMillis();
             if (now - lastBellTime > 100) {
                 lastBellTime = now;
-                mHandler.post(mBellRunnable);
+                UiKit.get().post(mBellRunnable);
             }
         }
     };
@@ -211,7 +201,6 @@ public class Term extends ActivityBase implements UpdateCallback {
     private int mActionBarMode = TermSettings.ACTION_BAR_MODE_NONE;
 
     private WindowListAdapter mWinListAdapter;
-    private Animation mWindowTitleAnim;
 
     private class WindowListActionBarAdapter extends WindowListAdapter
             implements UpdateCallback {
@@ -286,7 +275,6 @@ public class Term extends ActivityBase implements UpdateCallback {
                     // Right to left swipe -- next window
                     mViewFlipper.showNext();
                 }
-                showWindowTitleAnim();
                 return true;
             } else {
                 return false;
@@ -364,69 +352,6 @@ public class Term extends ActivityBase implements UpdateCallback {
         }
     };
 
-    @SuppressLint("HandlerLeak")
-    private Handler mHandler = new Handler();
-    private String lastInputHost;
-    private AppCompatEditText mHostInputEdit;
-    private final DialogInterface.OnClickListener sshClientDialogClick = new OnClickListener() {
-        @SuppressLint("SdCardPath")
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            TermSession session = Term.this.getCurrentTermSession();
-            if (session == null) {
-                return;
-            }
-
-            lastInputHost = mHostInputEdit.getText().toString();
-            if (TextUtils.isEmpty(lastInputHost)) {
-                return;
-            }
-
-            mPrefs.edit().putString("last_input_host", lastInputHost).commit();
-            String[] arr = lastInputHost.split("#", 2);
-            if (arr.length != 2) {
-                Toast.makeText(Term.this, "No password!", Toast.LENGTH_SHORT)
-                        .show();
-                return;
-            }
-
-            String hostAndPort = arr[0];
-            String password = arr[1];
-
-            if (TextUtils.isEmpty(hostAndPort) || TextUtils.isEmpty(password)) {
-                return;
-            }
-
-            if (!hostAndPort.contains("@")) {
-                Toast.makeText(Term.this, "No host!", Toast.LENGTH_SHORT)
-                        .show();
-                return;
-            }
-
-            int idx = hostAndPort.indexOf(":");
-            String host = hostAndPort;
-            int port = 22;
-
-            if (idx != -1) {
-                try {
-                    host = hostAndPort.substring(0, idx);
-                    port = Integer.parseInt(hostAndPort.substring(idx + 1));
-                } catch (Exception e) {
-                    Log.e(TermDebug.LOG_TAG, "ssh client: " + e.toString());
-                }
-            }
-
-            doResetTerm();
-            byte[] buffer = Term.this.getString(R.string.connected, host)
-                    .getBytes();
-            session.getEmulator().append(buffer, 0, buffer.length);
-            session.write(String
-                    .format("DROPBEAR_PASSWORD=%s /data/data/%s/lib/libdbclient.so %s -p %d -y\n",
-                            password, Term.this.getPackageName(), host, port));
-
-        }
-    };
-
     @SuppressWarnings("deprecation")
     @SuppressLint("InlinedApi")
     @Override
@@ -451,15 +376,12 @@ public class Term extends ActivityBase implements UpdateCallback {
         sendOrderedBroadcast(broadcast, PERMISSION_PATH_PREPEND_BROADCAST,
                 mPathReceiver, null, RESULT_OK, null, null);
 
-        int actionBarMode = mSettings.actionBarMode();
-        mActionBarMode = actionBarMode;
+        mActionBarMode = mSettings.actionBarMode();
 
         setContentView(R.layout.term_activity);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        mWindowTitleAnim = AnimationUtils.loadAnimation(this, R.anim.window_title_anim);
 
         mTermMenuItems[0] = new TermMenuItem(SELECT_TEXT_ID, getString(R.string.select_text));
         mTermMenuItems[1] = new TermMenuItem(COPY_ALL_ID, getString(R.string.copy_all));
@@ -472,12 +394,6 @@ public class Term extends ActivityBase implements UpdateCallback {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 TermDebug.LOG_TAG);
-        WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        int wifiLockMode = WifiManager.WIFI_MODE_FULL;
-        if (AndroidCompat.SDK >= 12) {
-            wifiLockMode = WIFI_MODE_FULL_HIGH_PERF;
-        }
-        mWifiLock = wm.createWifiLock(wifiLockMode, TermDebug.LOG_TAG);
 
         ActionBar actionBar = getSupportActionBar(); /*ActivityCompat.getActionBar(this);*/
         if (actionBar != null) {
@@ -494,10 +410,10 @@ public class Term extends ActivityBase implements UpdateCallback {
         // ///////////////////////////////////////
         mSoundPoll = new SoundPool(1, AudioManager.STREAM_SYSTEM, 0);
         mBellSoundId = mSoundPoll.load(this, R.raw.bell, 1);
-        TSIntent = new Intent(this, TermService.class);
-        startService(TSIntent);
+        mTermServiceIntent = new Intent(this, TermService.class);
+        startService(mTermServiceIntent);
 
-        if (!bindService(TSIntent, mTSConnection, BIND_AUTO_CREATE)) {
+        if (!bindService(mTermServiceIntent, mTermServiceConnection, BIND_AUTO_CREATE)) {
             Log.e(TermDebug.LOG_TAG, "could not start service");
         }
         // ///////////////////////////////////////
@@ -527,17 +443,6 @@ public class Term extends ActivityBase implements UpdateCallback {
 
         return path.substring(0, path.length() - 1);
     }
-
-    private void showWindowTitleAnim() {
-        // FIXME shadow after anim end
-//        if (mTermList == null) {
-//            return;
-//        }
-//
-//        final View root = mTermList.getSelectedView();
-//        root.startAnimation(mWindowTitleAnim);
-    }
-
 
     private void populateViewFlipper() {
         if (mTermService != null) {
@@ -632,23 +537,15 @@ public class Term extends ActivityBase implements UpdateCallback {
     public void onDestroy() {
         super.onDestroy();
         mViewFlipper.removeAllViews();
-        unbindService(mTSConnection);
+        unbindService(mTermServiceConnection);
         if (mStopServiceOnFinish) {
-            stopService(TSIntent);
+            stopService(mTermServiceIntent);
         }
         mTermService = null;
-        mTSConnection = null;
+        mTermServiceConnection = null;
         if (mWakeLock.isHeld()) {
             mWakeLock.release();
         }
-        if (mWifiLock.isHeld()) {
-            mWifiLock.release();
-        }
-    }
-
-    private void restart() {
-        startActivity(getIntent());
-        finish();
     }
 
     public static Intent createTermIntent(Context context) {
@@ -792,7 +689,7 @@ public class Term extends ActivityBase implements UpdateCallback {
         String defValue = getDir("HOME", MODE_PRIVATE).getAbsolutePath();
         String homePath = mPrefs.getString("home_path", defValue);
         editor.putString("home_path", homePath);
-        editor.commit();
+        editor.apply();
 
         mSettings.readPrefs(mPrefs);
         updatePrefs();
@@ -822,15 +719,6 @@ public class Term extends ActivityBase implements UpdateCallback {
             }
         }
 
-        if (AndroidCompat.SDK < 5) {
-            /*
-             * If we lose focus between a back key down and a back key up, we
-			 * shouldn't respond to the next back key up event unless we get
-			 * another key down first
-			 */
-            mBackKeyPressed = false;
-        }
-
 		/*
          * Explicitly close the input method Otherwise, the soft keyboard could
 		 * cover up whatever activity takes our place
@@ -844,7 +732,6 @@ public class Term extends ActivityBase implements UpdateCallback {
             }
         }.start();
     }
-
 
 
     private boolean checkHaveFullHwKeyboard(Configuration c) {
@@ -892,42 +779,17 @@ public class Term extends ActivityBase implements UpdateCallback {
             doResetTerm();
         } else if (id == R.id.menu_toggle_wakelock) {
             doToggleWakeLock();
-        } else if (id == R.id.menu_toggle_wifilock) {
-            doToggleWifiLock();
         } else if (id == R.id.menu_title) {
             doRenameWindow();
         } else if (id == R.id.menu_window_list) {
-            startActivityForResult(new Intent(this, WindowList.class),
+            startActivityForResult(new Intent(this, WindowListActivity.class),
                     REQUEST_CHOOSE_WINDOW);
-        } else if (id == R.id.menu_special_keys) {
-            doDocumentKeys();
-        } else if (id == R.id.menu_ssh) {
-            doClientSsh();
         }
         // Hide the action bar if appropriate
         if (mActionBarMode == TermSettings.ACTION_BAR_MODE_HIDES) {
             mActionBar.hide();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void doClientSsh() {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                lastInputHost = mPrefs.getString("last_input_host", null);
-
-                mHostInputEdit = new AppCompatEditText(Term.this);
-                mHostInputEdit.setText(lastInputHost);
-                mHostInputEdit.setHint("user@host:port#password");
-
-                new AlertDialog.Builder(Term.this)
-                        .setView(mHostInputEdit)
-                        .setTitle(R.string.menu_ssh)
-                        .setPositiveButton(android.R.string.yes,
-                                sshClientDialogClick).show();
-            }
-        });
     }
 
     private void doCreateNewWindow() {
@@ -952,25 +814,35 @@ public class Term extends ActivityBase implements UpdateCallback {
     }
 
     private void confirmCloseWindow() {
-        final AlertDialog.Builder b = new AlertDialog.Builder(this);
-        b.setIcon(android.R.drawable.ic_dialog_alert);
-        b.setMessage(R.string.confirm_window_close_message);
-        final Runnable closeWindow = new Runnable() {
-            @Override
-            public void run() {
+        TermSession termSession = getCurrentTermSession();
+
+        if (termSession instanceof GenericTermSession) {
+            GenericTermSession session = ((GenericTermSession) termSession);
+            if (session.isShellClosed()) {
                 doCloseWindow();
+                return;
             }
-        };
-        b.setPositiveButton(android.R.string.yes,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                        mHandler.post(closeWindow);
-                    }
-                });
-        b.setNegativeButton(android.R.string.no, null);
-        b.show();
+        }
+
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setMessage(R.string.confirm_window_close_message)
+                .setPositiveButton(android.R.string.yes,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                                UiKit.get().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        doCloseWindow();
+                                    }
+                                });
+                            }
+                        })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+
     }
 
     public void doResetTerm() {
@@ -1013,7 +885,7 @@ public class Term extends ActivityBase implements UpdateCallback {
                 ts.setTitle(title);
             }
         };
-        mHandler.post(typeName);
+        UiKit.get().post(typeName);
     }
 
     private void doCloseWindow() {
@@ -1132,35 +1004,17 @@ public class Term extends ActivityBase implements UpdateCallback {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem wakeLockItem = menu.findItem(R.id.menu_toggle_wakelock);
-        MenuItem wifiLockItem = menu.findItem(R.id.menu_toggle_wifilock);
         if (mWakeLock.isHeld()) {
             wakeLockItem.setTitle(R.string.disable_wakelock);
         } else {
             wakeLockItem.setTitle(R.string.enable_wakelock);
-        }
-        if (mWifiLock.isHeld()) {
-            wifiLockItem.setTitle(R.string.disable_wifilock);
-        } else {
-            wifiLockItem.setTitle(R.string.enable_wifilock);
         }
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        /*
-         * The pre-Eclair default implementation of onKeyDown() would prevent
-		 * our handling of the Back key in onKeyUp() from taking effect, so
-		 * ignore it here
-		 */
-        if (AndroidCompat.SDK < 5 && keyCode == KeyEvent.KEYCODE_BACK) {
-			/*
-			 * Android pre-Eclair has no key event tracking, and a back key down
-			 * event delivered to an activity above us in the back stack could
-			 * be succeeded by a back key up event to us, so we need to keep
-			 * track of our own back key presses
-			 */
-            mBackKeyPressed = true;
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             return true;
         } else {
             return super.onKeyDown(keyCode, event);
@@ -1171,16 +1025,6 @@ public class Term extends ActivityBase implements UpdateCallback {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                if (AndroidCompat.SDK < 5) {
-                    if (!mBackKeyPressed) {
-					/*
-					 * This key up event might correspond to a key down
-					 * delivered to another activity -- ignore
-					 */
-                        return false;
-                    }
-                    mBackKeyPressed = false;
-                }
                 if (mActionBarMode == TermSettings.ACTION_BAR_MODE_HIDES
                         && mActionBar.isShowing()) {
                     mActionBar.hide();
@@ -1197,7 +1041,7 @@ public class Term extends ActivityBase implements UpdateCallback {
                         doCloseWindow();
                         return true;
                     default:
-                        return false;
+                        return true;
                 }
             case KeyEvent.KEYCODE_MENU:
                 if (mActionBar != null && !mActionBar.isShowing()) {
@@ -1237,10 +1081,7 @@ public class Term extends ActivityBase implements UpdateCallback {
     private boolean canPaste() {
         ClipboardManagerCompat clip = ClipboardManagerCompatFactory
                 .getManager(getApplicationContext());
-        if (clip.hasText()) {
-            return true;
-        }
-        return false;
+        return clip.hasText();
     }
 
     private void doPreferences() {
@@ -1271,37 +1112,6 @@ public class Term extends ActivityBase implements UpdateCallback {
         getCurrentEmulatorView().sendFnKey();
     }
 
-    private void doDocumentKeys() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        Resources r = getResources();
-        dialog.setTitle(r.getString(R.string.control_key_dialog_title));
-        dialog.setMessage(formatMessage(mSettings.getControlKeyId(),
-                TermSettings.CONTROL_KEY_ID_NONE, r,
-                R.array.control_keys_short_names,
-                R.string.control_key_dialog_control_text,
-                R.string.control_key_dialog_control_disabled_text, "CTRLKEY")
-                + "\n\n"
-                + formatMessage(mSettings.getFnKeyId(),
-                TermSettings.FN_KEY_ID_NONE, r,
-                R.array.fn_keys_short_names,
-                R.string.control_key_dialog_fn_text,
-                R.string.control_key_dialog_fn_disabled_text, "FNKEY"));
-        dialog.setPositiveButton(android.R.string.yes, null);
-        dialog.show();
-    }
-
-    private String formatMessage(int keyId, int disabledKeyId, Resources r,
-                                 int arrayId, int enabledId, int disabledId, String regex) {
-        if (keyId == disabledKeyId) {
-            return r.getString(disabledId);
-        }
-        String[] keyNames = r.getStringArray(arrayId);
-        String keyName = keyNames[keyId];
-        String template = r.getString(enabledId);
-        String result = template.replaceAll(regex, keyName);
-        return result;
-    }
-
     private void doToggleSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
@@ -1313,15 +1123,6 @@ public class Term extends ActivityBase implements UpdateCallback {
             mWakeLock.release();
         } else {
             mWakeLock.acquire();
-        }
-        ActivityCompat.invalidateOptionsMenu(this);
-    }
-
-    private void doToggleWifiLock() {
-        if (mWifiLock.isHeld()) {
-            mWifiLock.release();
-        } else {
-            mWifiLock.acquire();
         }
         ActivityCompat.invalidateOptionsMenu(this);
     }
@@ -1392,7 +1193,7 @@ public class Term extends ActivityBase implements UpdateCallback {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface arg0, int arg1) {
-                                mHandler.post(openLinkRunnable);
+                                UiKit.get().post(openLinkRunnable);
                             }
                         }).setNegativeButton(android.R.string.no, null).show();
     }

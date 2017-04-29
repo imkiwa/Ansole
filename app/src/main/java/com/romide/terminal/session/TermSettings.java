@@ -1,4 +1,4 @@
-package com.romide.terminal.util;
+package com.romide.terminal.session;
 
 import java.io.File;
 
@@ -258,8 +258,7 @@ public class TermSettings {
 
         builder.append("\n");
         builder.append(readStringPref(INITIALCOMMAND_KEY, mInitialCommand));
-
-        return builder.toString();
+        return builder.toString().trim();
     }
 
     private String findSu() {
@@ -268,7 +267,6 @@ public class TermSettings {
                 return su;
             }
         }
-
         return null;
     }
 
